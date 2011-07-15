@@ -1,25 +1,38 @@
-<h1>Benny Balla Mix!</h1>
-<p>Find me in app/views/pages/index.html.erb</p>
-<p id="player">Which type of player?
-  <label for="offense">Offense:</label>
-  <input id="offense" type="radio" value="offense" name="player_type" />
-  <label for="defense">Defense:</label>
-  <input id="defense" type="radio" value="defense" name="player_type" />
-</p>
-<p id="court_type">What type of court?
-  <label for="nba_court">NBA:</label>
-  <input id="nba_court" type="radio" value="nba" name="court_type" />
-  <label for="college_court">College:</label>
-  <input id="college_court" type="radio" value="college" name="court_type" checked="checked" />
-  <label for="hs_court">High School:</label>
-  <input id="hs_court" type="radio" value="hs" name="court_type" />
-</p>
-<p>
-  <button type="button" id="step">Save Step</button>
-  <button type="button" id="animate">Animate!</button>
-</p>
-<h3>Step List</h3>
-<ol id="steps">
-</ol>
-<%# 347 by 650 is good EXTRA 6 PIX IS FOR PADDING THE LINES %>
-<canvas id="court" height="506" width="946" />
+<html>
+  <head>
+    <title>Playbook</title>
+  </head>
+<body>
+  <h1>Benny Balla Mix!</h1>
+  <p>Find me in app/views/pages/index.html.erb</p>
+  <p id="player">Which type of player?
+    <label for="offense">Offense:</label>
+    <input id="offense" type="radio" value="offense" name="player_type" />
+    <label for="defense">Defense:</label>
+    <input id="defense" type="radio" value="defense" name="player_type" />
+  </p>
+  <p id="court_type">What type of court?
+    <label for="nba_court">NBA:</label>
+    <input id="nba_court" type="radio" value="nba" name="court_type" />
+    <label for="college_court">College:</label>
+    <input id="college_court" type="radio" value="college" name="court_type" checked="checked" />
+    <label for="hs_court">High School:</label>
+    <input id="hs_court" type="radio" value="hs" name="court_type" />
+  </p>
+  <p>
+    <button type="button" id="step">Save Step</button>
+    <button type="button" id="animate">Animate!</button>
+  </p>
+
+  <h3>Step List</h3>
+  <ol id="steps">
+  </ol>
+  <%# 347 by 650 is good EXTRA 6 PIX IS FOR PADDING THE LINES %>
+  <canvas id="court" height="506" width="946" />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" ></script>
+  <script src="/javascripts/playbook.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  </body>
+</html>
