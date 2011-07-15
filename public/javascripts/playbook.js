@@ -1,4 +1,4 @@
-var socket = io.connect('http://10.190.203.97:3000/');
+var socket = io.connect('http://localhost:3000/');
 socket.on('news', function (data) {
   console.log(data);
   socket.emit('my other event', { my: 'data' });
@@ -316,6 +316,8 @@ function saveStep(){
 				player.steps.push([player.x,player.y]);
 				player.current_step = player.current_step + 1;
 				$("#steps").append('<li><a class="step" href="#step-'+ player.steps.length + '">X ' + player.x + " Y: " + player.y + "</a></li>");
+                                socket.emit('savedStep!', { x: player.x, y: player.y });
+
 		   });
 }
 
