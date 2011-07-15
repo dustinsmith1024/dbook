@@ -1,0 +1,256 @@
+$(document).ready(function () {
+
+   $(document).mousemove(function(e){
+      $('#status').html(e.pageX +', '+ e.pageY);
+   }); 
+
+   $("canvas").click(function(e){
+
+      var x = e.pageX - this.offsetLeft;
+      var y = e.pageY - this.offsetTop;
+
+      //$('body').append(e.pageX +', '+ e.pageY + '<br/>');
+      //$('body').append(this.offsetLeft +', '+ this.offsetTop + '<br/>');
+      //$('body').append(x +', '+ y + '<br/>');
+      drawX(x,y); //NEED TOGGLES FOR WHICH ON WE WANT TO DRAW
+      drawO(x,y);
+   });
+
+  $("canvas").drawRect({
+    strokeStyle: "#000",
+    strokeWidth: 1,
+    x: 10, y: 10,
+    width: 575,
+    height: 330,
+    cornerRadius: 1,
+    fromCenter: false
+  });
+
+});
+
+var team = [];
+
+function Player() {
+  this.x = 0;
+  this.y = 0;
+  this.
+}
+
+function X() {
+  this.x = 0;
+  this.y = 0;
+  this.strokeStyle = "#000";
+  this.strokeWidth = 3;
+  this.strokeJoin = "round";
+  this.strokeCap = "round";
+  this.x1 = x + 5;
+  this.y1 = y + 5;
+  this.x2 = x - 5;
+  this.y2 = y -5;
+}
+
+function addX(x, y) {
+  var player = new X;
+  player.x = x;
+  player.y = y;
+  team.push(player);
+  invalidate();
+}
+
+function drawX(a, b) {
+  a = a + 5; //these make the X start in the middle
+  b = b + 5;
+  a2 = a - 10;
+  b2 = b - 10;
+  $("canvas").drawLine({
+    strokeStyle: "#000",
+    strokeWidth: 3,
+    strokeCap: "round",
+    strokeJoin: "round",
+    x1: a, y1: b,
+    x2: a2, y2: b2
+  });
+
+  $("canvas").drawLine({
+    strokeStyle: "#000",
+    strokeWidth: 3,
+    strokeCap: "round",
+    strokeJoin: "round",
+    x1: a, y1: b2,
+    x2: a2, y2: b,
+    fromCenter: true
+  });
+}
+
+function drawO(a,b) {
+
+$("canvas").drawEllipse({
+  //fillStyle: "#000",
+  strokeStyle: "#000",
+  x: a, y: b,
+  width: 15, height: 15
+})
+
+
+anvas;
+var ctx;
+var WIDTH;
+var HEIGHT;
+var INTERVAL = 20;  // how often, in milliseconds, we check to see if a redraw is needed
+ 
+var isDrag = false;
+var mx, my; // mouse coordinates
+ 
+ // when set to true, the canvas will redraw everything
+ // invalidate() just sets this to false right now
+ // we want to call invalidate() whenever we make a change
+var canvasValid = false;
+ 
+// The node (if any) being selected.
+// If in the future we want to select multiple objects, this will get turned into an array
+var mySel; 
+ 
+// The selection color and width. Right now we have a red selection with a small width
+var mySelColor = '#CC0000';
+var mySelWidth = 2;
+ 
+// we use a fake canvas to draw individual shapes for selection testing
+var ghostcanvas;
+var gctx; // fake canvas context
+ 
+// since we can drag from anywhere in a node
+// instead of just its x/y corner, we need to save
+// the offset of the mouse when we start dragging.
+var offsetx, offsety;
+ 
+// Padding and border style widths for mouse offsets
+var stylePaddingLeft, stylePaddingTop, styleBorderLeft, styleBorderTop;
+ 
+// initialize our canvas, add a ghost canvas, set draw loop
+// then add everything we want to intially exist on the canvas
+function init() {
+  canvas = document.getElementById('canvas');
+  HEIGHT = canvas.height;
+  WIDTH = canvas.width;
+  ctx = canvas.getContext('2d');
+  ghostcanvas = document.createElement('canvas');
+  ghostcanvas.height = HEIGHT;
+  ghostcanvas.width = WIDTH;
+  gctx = ghostcanvas.getContext('2d');
+ 
+  //fixes a problem where double clicking causes text to get selected on the canvas
+  canvas.onselectstart = function () { return false; }
+ 
+  // fixes mouse co-ordinate problems when there's a border or padding
+  // see getMouse for more detail
+  if (document.defaultView && document.defaultView.getComputedStyle) {
+    stylePaddingLeft = parseInt(document.defaultView.getComputedStyle(canvas, null)['paddingLeft'], 10)      || 0;
+    stylePaddingTop  = parseInt(document.defaultView.getComputedStyle(canvas, null)['paddingTop'], 10)       || 0;
+    styleBorderLeft  = parseInt(document.defaultView.getComputedStyle(canvas, null)['borderLeftWidth'], 10)  || 0;
+    styleBorderTop   = parseInt(document.defaultView.getComputedStyle(canvas, null)['borderTopWidth'], 10)   || 0;
+  }
+ 
+  // make draw() fire every INTERVAL milliseconds.
+  setInterval(draw, INTERVAL);
+ 
+  // add our events. Up and down are for dragging,
+  // double click is for making new boxes
+  canvas.onmousedown = myDown;
+  canvas.onmouseup = myUp;
+  canvas.ondblclick = myDblClick;
+ 
+  // add custom initialization here:
+ 
+  // add an orange rectangle
+  addRect(200, 200, 40, 40, '#FFC02B');
+ 
+  // add a smaller blue rectangle
+  addRect(25, 90, 25, 25, '#2BB8FF');
+}
+
+// While draw is called as often as the INTERVAL variable demands,
+// It only ever does something if the canvas gets invalidated by our code
+function draw() {
+  if (canvasValid == false) {
+    clear(ctx);
+ 
+    // Add stuff you want drawn in the background all the time here
+ 
+    // draw all boxes
+    var l = boxes.length;
+    for (var i = 0; i < l; i++) {
+        drawshape(ctx, boxes[i], boxes[i].fill);
+    }
+ 
+    // draw selection
+    // right now this is just a stroke along the edge of the selected box
+    if (mySel != null) {
+      ctx.strokeStyle = mySelColor;
+      ctx.lineWidth = mySelWidth;
+      ctx.strokeRect(mySel.x,mySel.y,mySel.w,mySel.h);
+    }
+ 
+    // Add stuff you want drawn on top all the time here
+ 
+ 
+    canvasValid = true;
+  }
+}
+
+// Happens when the mouse is clicked in the canvas
+function myDown(e){
+  getMouse(e);
+  clear(gctx); // clear the ghost canvas from its last use
+ 
+  // run through all the boxes
+  var l = boxes.length;
+  for (var i = l-1; i >= 0; i--) {
+    // draw shape onto ghost context
+    drawshape(gctx, boxes[i], 'black');
+ 
+    // get image data at the mouse x,y pixel
+    var imageData = gctx.getImageData(mx, my, 1, 1);
+    var index = (mx + my * imageData.width) * 4;
+ 
+    // if the mouse pixel exists, select and break
+    if (imageData.data[3] > 0) {
+      mySel = boxes[i];
+      offsetx = mx - mySel.x;
+      offsety = my - mySel.y;
+      mySel.x = mx - offsetx;
+      mySel.y = my - offsety;
+      isDrag = true;
+      canvas.onmousemove = myMove;
+      invalidate();
+      clear(gctx);
+      return;
+    }
+ 
+  }
+  // havent returned means we have selected nothing
+  mySel = null;
+  // clear the ghost canvas for next time
+  clear(gctx);
+  // invalidate because we might need the selection border to disappear
+  invalidate();
+}
+
+// Happens when the mouse is moving inside the canvas
+function myMove(e){
+  if (isDrag){
+    getMouse(e);
+ 
+    mySel.x = mx - offsetx;
+    mySel.y = my - offsety;   
+ 
+    // something is changing position so we better invalidate the canvas!
+    invalidate();
+  }
+}
+ 
+function myUp(){
+  isDrag = false;
+  canvas.onmousemove = null;
+}
+
+
