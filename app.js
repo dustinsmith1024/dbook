@@ -32,7 +32,8 @@ app.get('/', function(req, res){
   });
 });
 
-app.listen(3000);
+var port = parseInt(process.env.PORT) || 3000;
+app.listen(port);
 io = io.listen(app);
 io.sockets.on('connection', function (socket) {
   socket.on('savedStep!', function(data){
