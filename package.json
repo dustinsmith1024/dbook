@@ -1,0 +1,9 @@
+{
+  "name": "playbook",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "2.4.3",
+    "socket.io": "0.7.7",
+    "underscore": "1.1.7",
+  }
+}

@@ -1,9 +1,7 @@
 var socket = io.connect('http://localhost:3000/');
-socket.on('news', function (data) {
-  console.log(data);
-  socket.emit('my other event', { my: 'data' });
-});
-
+socket.on('disconnect',function(){
+			alert("Server Connection Dropped!");
+		  });
 var canvas;
 var $canvas;
 var court;
@@ -163,6 +161,7 @@ var X = function(){
 	this.y = 0;
 	this.steps = [];
 	this.current_step = 0;
+	this.moveHandle = false;
 	this.team = "offense";
 	this.write_to = 0;
 	this.canvas = function(){
@@ -215,6 +214,7 @@ var O = function (){
 	this.y = 0;
 	this.steps = [];
 	this.current_step = 0;
+	this.moveHandle = false;
 	this.team = "defense";
 	this.write_to = 0;
 	this.strokeStyle = "#000";
@@ -312,13 +312,16 @@ function init() {
 }
 
 function saveStep(){
+	var maxStep = 0;
 	_.each(team,function(player){
 				player.steps.push([player.x,player.y]);
-				player.current_step = player.current_step + 1;
-				$("#steps").append('<li><a class="step" href="#step-'+ player.steps.length + '">X ' + player.x + " Y: " + player.y + "</a></li>");
-                                socket.emit('savedStep!', { x: player.x, y: player.y });
-
+				++player.current_step;
+                socket.emit('savedStep!', player);
+				if (maxStep < player.current_step){
+					maxStep = player.current_step;
+				}
 		   });
+		$("#steps").append('<li><a class="step" href="#step-' + maxStep + '">' + maxStep + '</a></li>');
 }
 
 function saveStep2(teamer){
@@ -351,7 +354,6 @@ function animate(step){
 		   var end_y = player.steps[step - 1][1];//second on in step is y
 		   var spot_x = x;
 		   var spot_y = y;
-		   //console.log("x: " + x + " y: " + y + " end_x: " + end_x + " end_y: " + end_y);
 		   function move(){
 				if(player.x != end_x || player.y != end_y){
 					console.log("draw!");
@@ -379,10 +381,10 @@ function animate(step){
 					draw();
 					canvasValid = false;
 				}else{
-					clearInterval(moveHandle);
+					clearInterval(player.moveHandle);
 				}
 		   }
-		   moveHandle = setInterval(move,20);
+		   player.moveHandle = setInterval(move,20);
 		   });
 }
 

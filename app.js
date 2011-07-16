@@ -27,15 +27,24 @@ app.configure('production', function(){
 
 app.get('/', function(req, res){
   console.log("/ requested");
-  res.send('hello world');
+  fs.readFile(__dirname + '/public/index.html', 'utf8', function(err, text){
+      res.send(text);
+  });
 });
 
-var preWrap = _.template('<pre class="command"><code><%= contents %></code></pre>');
+app.listen(3000);
+io = io.listen(app);
+io.sockets.on('connection', function (socket) {
+  socket.on('savedStep!', function(data){
+    console.log("Save Player to DB or File");  //DO SOME DB STUFF OR SOMETHING
+  });
+});
 
+/* EXAMPLES FROM WORK BELOW
+var preWrap = _.template('<pre class="command"><code><%= contents %></code></pre>');
 var hostname = function (callback){
   callback(null, os.hostname());
 }
-
 var passengerMem = function(callback) {
   exec('passenger-status',
     function (error, stdout, stderr) {
@@ -51,7 +60,6 @@ var passengerMem = function(callback) {
     }
   });
 }
-
 var db = function (callback) {
   exec('mysqlshow -uroot -pcerner fitness_production --status',
     function (error, stdout, stderr) {
@@ -108,8 +116,8 @@ app.get('/rails-memory', function(req, res){
 app.listen(3000);
 io = io.listen(app);
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  socket.on('savedStep!', function(data){
+    console.log("Save Player to DB or File");  //DO SOME DB STUFF OR SOMETHING
   });
 });
+*/
