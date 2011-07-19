@@ -281,23 +281,23 @@ function init() {
 	setInterval(draw, INTERVAL);
 	// add our events. Up and down are for dragging,
 	// double click is for making new boxes
-	$canvas.mousedown(function(event){
+	$canvas.bind("click",function(event){
 						myDown(event);
-					  }).mouseup(function(event){
+					  }).bind("click", function(event){
 						myUp(event);
-					  }).dblclick(function(event){
+					  }).bind("tap", function(event){
 						myDblClick(event);
 	});
 	$('input[name="court_type"]').change(function(){
 										 court = new Court();
 										 court.draw;
 	});
-	$("button#step").click(function(){
+	$("button#step").bind("tap", function(){
 						   saveStep();
 					//Would also save to the db
 					//save the image as a thumbnail and add it to the side.
 					});
-	$("button#animate").click(function(){
+	$("button#animate").bind("tap", function(){
 									 animate(1); //EVENTUALLY THIS WILL ANIMATE THE WHOLE THING...
 									 });	
 	$("a.step").live('click', function(){
