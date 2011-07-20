@@ -261,6 +261,7 @@ function invalidate() {
 	//Helps performance, only draws the canvas while its valid.
 	canvasValid = false;
 } 
+
 // initialize our canvas, add a ghost canvas, set draw loop
 // then add everything we want to intially exist on the canvas
 function init() {
@@ -268,7 +269,7 @@ function init() {
 	$CANVAS = $canvas;
 	$ghostcanvas = $canvas.clone();
 	//fixes a problem where double clicking causes text to get selected on the canvas
-	$canvas.select(function () { return false; });
+	//$canvas.select(function () { return false; });
 	// fixes mouse co-ordinate problems when there's a border or padding
 	// see getMouse for more detail
 	/*if (document.defaultView && document.defaultView.getComputedStyle) {
@@ -281,9 +282,9 @@ function init() {
 	setInterval(draw, INTERVAL);
 	// add our events. Up and down are for dragging,
 	// double click is for making new boxes
-	$canvas.bind("click",function(event){
+	$canvas.bind("mousedown",function(event){
 						myDown(event);
-					  }).bind("click", function(event){
+					  }).bind("mouseup", function(event){
 						myUp(event);
 					  }).bind("tap", function(event){
 						myDblClick(event);
@@ -300,7 +301,7 @@ function init() {
 	$("button#animate").bind("tap", function(){
 									 animate(1); //EVENTUALLY THIS WILL ANIMATE THE WHOLE THING...
 									 });	
-	$("a.step").live('click', function(){
+	$("a.step").live('tap', function(){
 									 var step = $(this).attr("href");
 									 step = step.replace("#step-","");
 									 animate(step);
