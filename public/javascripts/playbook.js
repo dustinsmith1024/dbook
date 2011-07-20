@@ -1,6 +1,6 @@
 var socket = io.connect('http://localhost:3000/');
 socket.on('disconnect',function(){
-			alert("Server Connection Dropped!");
+			console.log("Server Connection Dropped!");
 		  });
 var canvas;
 var $canvas;
@@ -29,8 +29,19 @@ var steps = [];
 // Padding and border style widths for mouse offsets
 //var stylePaddingLeft, stylePaddingTop, styleBorderLeft, styleBorderTop;
 
+var mouseDown = 0;
+document.body.onmousedown = function() { 
+	++mouseDown;
+	console.log(mouseDown);
+}
+document.body.onmouseup = function() {
+	--mouseDown;
+	console.log(mouseDown);
+}
+
 $(document).ready(function () {
 				  init();
+
 });
 
 function teamCount(kind){
@@ -269,7 +280,7 @@ function init() {
 	$CANVAS = $canvas;
 	$ghostcanvas = $canvas.clone();
 	//fixes a problem where double clicking causes text to get selected on the canvas
-	//$canvas.select(function () { return false; });
+	$canvas.select(function () { return false; });
 	// fixes mouse co-ordinate problems when there's a border or padding
 	// see getMouse for more detail
 	/*if (document.defaultView && document.defaultView.getComputedStyle) {
@@ -282,12 +293,13 @@ function init() {
 	setInterval(draw, INTERVAL);
 	// add our events. Up and down are for dragging,
 	// double click is for making new boxes
-	$canvas.bind("mousedown",function(event){
+	$canvas.bind("vmousedown",function(event){
 						myDown(event);
 					  }).bind("mouseup", function(event){
 						myUp(event);
-					  }).bind("tap", function(event){
-						myDblClick(event);
+					  }).bind("taphold", function(event){
+							  console.log("should be draggin");
+							  //myDblClick(event);
 	});
 	$('input[name="court_type"]').change(function(){
 										 court = new Court();
@@ -461,8 +473,6 @@ function myDown(e){
 	clear($ghostcanvas);
 	// run through all the boxes
 	var l = team.length;
-	//console.log("L: " + l);
-	//for (var i = 0; i < l; i++) {
 	for (var i = l-1; i >= 0; i--) {
 		// draw shape onto ghost context		
 		team[i].write_to = 1; //SWITCHES TO GHOST
@@ -479,12 +489,22 @@ function myDown(e){
 			offsety = y - mySel.y;
 			mySel.x = x - offsetx;
 			mySel.y = y - offsety;
+			console.log(mouseDown);
 			isDrag = true;
 			$canvas.mousemove(function(event){ myMove(event);});
 			clear($ghostcanvas);
 			invalidate();
 			return;
-		}	
+		}
+	}
+	if($('input[name="player_type"]:checked').val()=="offense"){
+		if (teamCount("offense") < 5){
+			addX(x,y); //NEED TOGGLES FOR WHICH ON WE WANT TO DRAW
+		}//ELSE TELL THE USER THERE IS TOO MANY
+	}else{
+		if (teamCount("defense") < 5){
+			addO(x,y);
+		}//ELSE TELL THE USER THERE IS TOO MANY
 	}
 	// havent returned means we have selected nothing
 	mySel = null;
@@ -531,6 +551,7 @@ function myMove(e){
 }
 
 function myUp(){
+	console.log("myUp!");
 	isDrag = false;
 	$canvas.mousemove(function(){});
 }
