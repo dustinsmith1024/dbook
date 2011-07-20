@@ -2,13 +2,15 @@
 <html>
   <head>
     <title>Playbook</title>
+    <link rel="StyleSheet" href="/stylesheets/court.css" type="text/css" media="screen" />
   </head>
 <body>
   <div data-role="page">
-  <div data-role="header">
+  <div data-role="header" class="hidden">
   <h1>Benny Balla Mix!</h1>
   </div>
   <div data-role="content">
+  <div class="hidden">
   <p>Find me in app/views/pages/index.html.erb</p>
   <p id="player">Which type of player?
     <label for="offense">Offense:</label>
@@ -32,10 +34,14 @@
   <h3>Step List</h3>
   <ol id="steps">
   </ol>
+  </div>
   <!-----347 by 650 is good EXTRA 6 PIX IS FOR PADDING THE LINES !----->
   <canvas id="court" height="506" width="946" />
 
   </div>
+  </div>
+  <div data-role="footer" class="hidden">
+    Foot me
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" ></script>
   <script src="/javascripts/jcanvas.js"></script>

@@ -2,3 +2,6 @@ canvas {
   border: 0px solid black;
   border-radius: 0px;
 }
+.hidden {
+  display: none;
+}
