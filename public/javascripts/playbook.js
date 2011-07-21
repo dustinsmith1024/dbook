@@ -316,16 +316,20 @@ function init() {
 	setInterval(draw, INTERVAL);
 	// add our events. Up and down are for dragging,
 	// double click is for making new boxes
-	$canvas.bind("touchstart mousedown",function(event){
-						event.preventDefault();
-						myDown(event);
-					  }).bind("touchend mouseup", function(event){
-						event.preventDefault();
-						myUp(event);
-					  }).bind("taphold", function(event){
-							  event.preventDefault();
-							  console.log("should be draggin");
-							  //myDblClick(event);
+	$canvas.bind("touchstart",function(event){
+		event.preventDefault();
+		alert(event.touches[0].pageX);
+		myDown(event);
+	}).bind("mousedown",function(event){
+		event.preventDefault();
+		myDown(event);
+	}).bind("touchend mouseup", function(event){
+		event.preventDefault();
+		myUp(event);
+	}).bind("taphold", function(event){
+		event.preventDefault();
+		console.log("should be draggin");
+		//myDblClick(event);
 	});
 	$('input[name="court_type"]').change(function(){
 										 court = new Court();
