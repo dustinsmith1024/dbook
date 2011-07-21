@@ -465,8 +465,14 @@ function copyCtx(){
 function myDown(e){
 	e.preventDefault();
 	//getMouse(e);
-	var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
-	var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
+	if(e.touches){
+		var x = e.touches[0].pageX / cssScale[0] - $CANVAS[0].offsetLeft;
+		var y = e.touches[0].pageY / cssScale[1] - $CANVAS[0].offsetTop;
+    	alert(x);
+    }else{
+		var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
+		var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
+    }
 	clear($ghostcanvas);
 	// run through all the boxes
 	var l = team.length;
