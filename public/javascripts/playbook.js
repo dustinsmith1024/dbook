@@ -317,10 +317,13 @@ function init() {
 	// add our events. Up and down are for dragging,
 	// double click is for making new boxes
 	$canvas.bind("touchstart mousedown",function(event){
+						event.preventDefault();
 						myDown(event);
 					  }).bind("touchend mouseup", function(event){
+						event.preventDefault();
 						myUp(event);
 					  }).bind("taphold", function(event){
+							  event.preventDefault();
 							  console.log("should be draggin");
 							  //myDblClick(event);
 	});
@@ -460,6 +463,7 @@ function copyCtx(){
 }
 
 function myDown(e){
+	e.preventDefault();
 	//getMouse(e);
 	var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
 	var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
@@ -513,6 +517,7 @@ function clear(c) { //NEED TO FIX HEIGHT AND WIDTH
 
 // adds a new node
 function myDblClick(e) {
+	e.preventDefault();
 	//console.log("dblClick");
 	var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
 	var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
@@ -530,6 +535,7 @@ function myDblClick(e) {
 
 // Happens when the mouse is moving inside the canvas
 function myMove(e){
+    e.preventDefault();
 	if (isDrag){
 		//getMouse(e);
 		console.log(e.pageX);
