@@ -316,6 +316,17 @@ function init() {
 	setInterval(draw, INTERVAL);
 	// add our events. Up and down are for dragging,
 	// double click is for making new boxes
+
+	//if (e.touches.length == 1) {
+    //startDraw(e.touches[0].pageX, e.touches[0].pageY);
+function onTouchStart(e){
+  $("body").append(event.touches[0].pageX);
+}
+	canvas.addEventListener('touchstart', onTouchStart, false); 
+   	canvas.addEventListener('touchmove', onTouchMove, false);
+	canvas.addEventListener('touchend', onTouchEnd, false);
+	canvas.addEventListener('touchcancel', onTouchCancel, false); 
+
 	$canvas.bind("touchstart",function(event){
 		event.preventDefault();
 		alert(event.touches[0].pageX);
@@ -469,6 +480,9 @@ function copyCtx(){
 function myDown(e){
 	e.preventDefault();
 	//getMouse(e);
+	//if (e.touches.length == 1) {
+    //startDraw(e.touches[0].pageX, e.touches[0].pageY);
+
 	if(e.touches){
 		var x = e.touches[0].pageX / cssScale[0] - $CANVAS[0].offsetLeft;
 		var y = e.touches[0].pageY / cssScale[1] - $CANVAS[0].offsetTop;
