@@ -5,3 +5,16 @@ canvas {
 .hidden {
   display: none;
 }
+/* disable copy and paste, tap highlighting, text resize and callout popups */
+* {
+-webkit-tap-highlight-color: rgba(0,0,0,0);
+-webkit-text-size-adjust: none;
+-webkit-touch-callout: none;
+}
+:focus { outline: 0; }
+canvas {
+-webkit-user-select: none;
+cursor: crosshair;
+}
+html { -webkit-text-size-adjust:none; }
+ 
