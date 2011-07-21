@@ -8,40 +8,34 @@
     <link rel="StyleSheet" href="/stylesheets/court.css" type="text/css" media="screen" />
   </head>
 <body>
-  <div data-role="page">
-  <div data-role="header" class="hidden">
-  <h1>Benny Balla Mix!</h1>
-  </div>
-  <div data-role="content">
-  <div class="hidden">
-  <p>Find me in app/views/pages/index.html.erb</p>
-  <p id="player">Which type of player?
-    <label for="offense">Offense:</label>
-    <input id="offense" type="radio" value="offense" name="player_type" checked="checked" />
-    <label for="defense">Defense:</label>
-    <input id="defense" type="radio" value="defense" name="player_type" />
-  </p>
-  <p id="court_type">What type of court?
-    <label for="nba_court">NBA:</label>
-    <input id="nba_court" type="radio" value="nba" name="court_type" />
-    <label for="college_court">College:</label>
-    <input id="college_court" type="radio" value="college" name="court_type" checked="checked" />
-    <label for="hs_court">High School:</label>
-    <input id="hs_court" type="radio" value="hs" name="court_type" />
-  </p>
-  <p>
-    <button type="button" id="step">Save Step</button>
-    <button type="button" id="animate">Animate!</button>
-  </p>
+  <h1 class="hidden">Benny Balla Mix!</h1>
+    <div class="hidden">
+    <p>Find me in app/views/pages/index.html.erb</p>
+    <p id="player">Which type of player?
+      <label for="offense">Offense:</label>
+      <input id="offense" type="radio" value="offense" name="player_type" checked="checked" />
+      <label for="defense">Defense:</label>
+      <input id="defense" type="radio" value="defense" name="player_type" />
+    </p>
+    <p id="court_type">What type of court?
+      <label for="nba_court">NBA:</label>
+      <input id="nba_court" type="radio" value="nba" name="court_type" />
+      <label for="college_court">College:</label>
+      <input id="college_court" type="radio" value="college" name="court_type" checked="checked" />
+      <label for="hs_court">High School:</label>
+      <input id="hs_court" type="radio" value="hs" name="court_type" />
+    </p>
+    <p>
+      <button type="button" id="step">Save Step</button>
+      <button type="button" id="animate">Animate!</button>
+    </p>
 
-  <h3>Step List</h3>
-  <ol id="steps">
-  </ol>
-  </div>
+    <h3>Step List</h3>
+    <ol id="steps">
+    </ol>
+    </div>
   <!-----347 by 650 is good EXTRA 6 PIX IS FOR PADDING THE LINES !----->
   <canvas id="court" height="506" width="946" >No CANVAS Support</canvas>
-  </div>
-  </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" ></script>
   <script src="/javascripts/jcanvas.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.1.6/underscore-min.js"></script>

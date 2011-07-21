@@ -17,4 +17,4 @@ canvas {
 cursor: crosshair;
 }
 html { -webkit-text-size-adjust:none; }
- 
+* {margin:0} 
