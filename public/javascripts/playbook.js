@@ -6,8 +6,9 @@ var canvas;
 var $canvas;
 var court;
 var $CANVAS;
-var WIDTH;
-var HEIGHT;
+var cssScale;
+//var WIDTH;
+//var HEIGHT;
 var $ghostcanvas; // we use a fake canvas to draw individual shapes for selection testing
 var INTERVAL = 20;  // how often, in milliseconds, we check to see if a redraw is needed
 var isDrag = false;
@@ -30,13 +31,13 @@ var steps = [];
 //var stylePaddingLeft, stylePaddingTop, styleBorderLeft, styleBorderTop;
 
 var mouseDown = 0;
-document.body.onmousedown = function() { 
+document.body.onmousedown = function(e) { 
 	++mouseDown;
-	console.log(mouseDown);
+	console.log(e.pageX);
+	console.log(e.pageY);
 }
 document.body.onmouseup = function() {
 	--mouseDown;
-	console.log(mouseDown);
 }
 
 $(document).ready(function () {
@@ -277,8 +278,20 @@ function invalidate() {
 // then add everything we want to intially exist on the canvas
 function init() {
 	$canvas = $('#court');
-	$CANVAS = $canvas;
+	//set height and width to size of device window
+	var toolbarHeight = 10;
+	$canvas.height((window.innerHeight - toolbarHeight) + "px");
+	$canvas.width((window.innerWidth) + "px");
 	$ghostcanvas = $canvas.clone();
+	$CANVAS = $canvas;
+	cssScale = [$canvas.width() / $canvas.attr('width'),
+					$canvas.height() / $canvas.attr('height')];
+	console.log(cssScale);
+	
+	//this.setDims(x*cssScale[0], y*cssScale[1], w*cssScale[0], h*cssScale[1]);
+	
+	//this.x = (x - this.offset[0]) / cssScale[0] + w * .5;
+	//this.y = (y - this.offset[1]) / cssScale[1] + h * .5;	
 	//fixes a problem where double clicking causes text to get selected on the canvas
 	$canvas.select(function () { return false; });
 	// fixes mouse co-ordinate problems when there's a border or padding
@@ -401,36 +414,6 @@ function animate(step){
 		   });
 }
 
-
-function animate2(){
-	_.each(steps, function(step, step_num){
-		   console.log(step_num);
-		   console.log(step);
-		   _.each(step, function(player, key){
-				  console.log(player.x);
-				  var orig = player.x;
-				  var end = player.x + 100;
-				  var spot = orig;
-				  team.splice(key,key); // SOMEHOW NEED TO DELETE FROM THE MAIN SCREEN AND DRAW OLD TEAM, MAYBE JUST DRAW FIRST ANIMATE LATER...
-				  if (player.team=="offense"){
-					//addX(player.x,player.y);
-				  }else{
-					//addO(player.x,player.y);
-				  }
-				  console.log(orig + " " + end + " " + spot);
-				  function move(){
-					console.log("move");
-				  	if (spot < end){
-						player.x = spot;
-						spot = spot + 1;
-						draw();
-						canvasValid = false;
-					}
-				  }
-				  setInterval(move,20);
-		  });
-	});
-}
 // While draw is called as often as the INTERVAL variable demands,
 // It only ever does something if the canvas gets invalidated by our code
 function draw() {
@@ -468,8 +451,8 @@ function copyCtx(){
 
 function myDown(e){
 	//getMouse(e);
-	var x = e.pageX - $CANVAS[0].offsetLeft;
-	var y = e.pageY - $CANVAS[0].offsetTop;
+	var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
+	var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
 	clear($ghostcanvas);
 	// run through all the boxes
 	var l = team.length;
@@ -515,14 +498,14 @@ function myDown(e){
 }
 
 function clear(c) { //NEED TO FIX HEIGHT AND WIDTH 
-	c[0].getContext('2d').clearRect(0, 0, 700, 400);
+	c[0].getContext('2d').clearRect(0, 0, window.innerWidth, window.innerHeight);
 } 
 
 // adds a new node
 function myDblClick(e) {
 	//console.log("dblClick");
-	var x = e.pageX - $CANVAS[0].offsetLeft;
-	var y = e.pageY - $CANVAS[0].offsetTop;
+	var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
+	var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
 	if($('input[name="player_type"]:checked').val()=="offense"){
 		console.log("Draw X");
 		if (teamCount("offense") < 5){
@@ -539,8 +522,10 @@ function myDblClick(e) {
 function myMove(e){
 	if (isDrag){
 		//getMouse(e);
-		var x = e.pageX - $CANVAS[0].offsetLeft;
-		var y = e.pageY - $CANVAS[0].offsetTop;
+		console.log(e.pageX);
+		console.log(e.pageY);
+		var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
+		var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
 		
 		mySel.x = x - offsetx;
 		mySel.y = y - offsety;   
