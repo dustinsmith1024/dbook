@@ -43,7 +43,6 @@ document.body.onmouseup = function() {
 
 $(document).ready(function () {
 				  init();
-
 });
 
 function teamCount(kind){
@@ -317,9 +316,9 @@ function init() {
 	setInterval(draw, INTERVAL);
 	// add our events. Up and down are for dragging,
 	// double click is for making new boxes
-	$canvas.bind("vmousedown",function(event){
+	$canvas.bind("touchstart mousedown",function(event){
 						myDown(event);
-					  }).bind("mouseup", function(event){
+					  }).bind("touchend mouseup", function(event){
 						myUp(event);
 					  }).bind("taphold", function(event){
 							  console.log("should be draggin");
@@ -485,7 +484,7 @@ function myDown(e){
 			mySel.y = y - offsety;
 			console.log(mouseDown);
 			isDrag = true;
-			$canvas.mousemove(function(event){ myMove(event);});
+			$canvas.bind("touchmove mousemove", function(event){ myMove(event);});
 			clear($ghostcanvas);
 			invalidate();
 			return;
@@ -549,5 +548,5 @@ function myMove(e){
 function myUp(){
 	console.log("myUp!");
 	isDrag = false;
-	$canvas.mousemove(function(){});
+	$canvas.bind("touchmove mousemove", function(){});
 }
