@@ -1,14 +1,15 @@
 var socket = io.connect('http://localhost:3000/');
-socket.on('disconnect',function(){
+socket.on('disconnect', function(){
 			console.log("Server Connection Dropped!");
-		  });
+});
+socket.on('connection', function(){
+	console.log("Server Connection to Socket.io");
+});
 var canvas;
 var $canvas;
 var court;
 var $CANVAS;
 var cssScale;
-//var WIDTH;
-//var HEIGHT;
 var $ghostcanvas; // we use a fake canvas to draw individual shapes for selection testing
 var INTERVAL = 20;  // how often, in milliseconds, we check to see if a redraw is needed
 var isDrag = false;
@@ -184,22 +185,32 @@ var X = function(){
 		}
 	};
 	this.strokeStyle = "#000";
-	this.strokeWidth = 25;
+	this.strokeWidth = 5;
 	this.strokeJoin = "round";
 	this.strokeCap = "round";
 	this.x1 = function() {
-		return this.x + 15;
+		return this.x + 10;
 	};
 	this.y1 = function() {
-		return this.y + 15;
+		return this.y + 10;
 	};
 	this.x2 = function() {
-		return this.x - 15;
+		return this.x - 10;
 	};
 	this.y2 = function() {
-		return this.y - 15;
+		return this.y - 10;
 	};
 	this.draw = function() {
+		this.canvas().drawRect({
+  			strokeStyle: "#000",
+  			strokeWidth: 3,
+  			fillStyle: "#FFF",
+  			x: this.x1() - 10, y: this.y1() - 10,
+  			width: 50,
+  			height: 50,
+  			cornerRadius: 10,
+  			fromCenter: true
+		});
 	  this.canvas().drawLine({
 						 strokeStyle: this.strokeStyle,
 						 strokeWidth: this.strokeWidth,
