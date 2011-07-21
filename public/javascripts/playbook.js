@@ -184,20 +184,20 @@ var X = function(){
 		}
 	};
 	this.strokeStyle = "#000";
-	this.strokeWidth = 3;
+	this.strokeWidth = 25;
 	this.strokeJoin = "round";
 	this.strokeCap = "round";
 	this.x1 = function() {
-		return this.x + 5;
+		return this.x + 15;
 	};
 	this.y1 = function() {
-		return this.y + 5;
+		return this.y + 15;
 	};
 	this.x2 = function() {
-		return this.x - 5;
+		return this.x - 15;
 	};
 	this.y2 = function() {
-		return this.y - 5;
+		return this.y - 15;
 	};
 	this.draw = function() {
 	  this.canvas().drawLine({
