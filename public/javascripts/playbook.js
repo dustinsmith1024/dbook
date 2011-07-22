@@ -5,12 +5,14 @@ socket.on('disconnect', function(){
 socket.on('connection', function(){
 	console.log("Server Connection to Socket.io");
 });
-var $canvas,
+var canvas,
+	$canvas,
 	court,
 	$CANVAS,
+	$COURT_CANVAS,
 	cssScale,
 	$ghostcanvas, // we use a fake canvas to draw individual shapes for selection testing
-	INTERVAL = 20,  // how often, in milliseconds, we check to see if a redraw is needed
+	INTERVAL = 100,  // how often, in milliseconds, we check to see if a redraw is needed
 	isDrag = false,
 // when set to true, the canvas will redraw everything
 // invalidate() just sets this to false right now
@@ -31,55 +33,62 @@ var $canvas,
 	
 var mouseDown = 0;
 
+function loaded() {
+	//prevent default scrolling on document window
+	document.addEventListener('touchmove', function(e) {
+		e.preventDefault()
+	}, false);
+
+	canvas = document.querySelector('#players');
+	//check if the browser supports canvas
+	if (canvas.getContext) {
+		init();
+	}else {
+		alert('Your browser does not support Canvas 2D drawing, sorry!');
+	}
+} 
+
 function init() {
 
-        ctx = canvas.getContext('2d');
+    ctx = canvas.getContext('2d');
 
-	$canvas = $('#court');
+	$canvas = $('#players');
+	$COURT_CANVAS = $('#court');
 	//set height and width to size of device window
 	var toolbarHeight = 10;
 	$canvas.height((window.innerHeight - toolbarHeight) + "px");
 	$canvas.width((window.innerWidth) + "px");
+	$COURT_CANVAS.height((window.innerHeight - toolbarHeight) + "px");
+	$COURT_CANVAS.width((window.innerWidth) + "px");
 	$ghostcanvas = $canvas.clone();
+	$ghostcanvas.attr("id","ghost");
 	$CANVAS = $canvas;
 	cssScale = [$canvas.width() / $canvas.attr('width'),
 				$canvas.height() / $canvas.attr('height')];
-	//console.log(cssScale);
-	//this.setDims(x*cssScale[0], y*cssScale[1], w*cssScale[0], h*cssScale[1]);
 	
-	//this.x = (x - this.offset[0]) / cssScale[0] + w * .5;
-	//this.y = (y - this.offset[1]) / cssScale[1] + h * .5;	
-	//fixes a problem where double clicking causes text to get selected on the canvas
-	//$canvas.select(function () { return false; });
 	// make draw() fire every INTERVAL milliseconds.
 	setInterval(draw, INTERVAL);
-
-        //set height and width to size of device window
-        //canvas.setAttribute("height", (window.innerHeight - toolbarHeight) + "px");
-        //canvas.setAttribute("width", window.innerWidth + "px");
-//      document.querySelector('#strokecolor').style.background = 'rgb(0,0,0)';
-        //add event listeners
-//      document.querySelector('#clear').addEventListener('click', clearCanvas, false);
-
-        //add touch and mouse event listeners
-        canvas.addEventListener('touchstart', onTouchStart, false);
-        canvas.addEventListener('mousedown', onMouseDown, false);
-	
+	document.querySelector('button#step').addEventListener('click', saveStep, false);
+	document.querySelector('button#animate').addEventListener('animate',animate,false);
+    //add touch and mouse event listeners
+    canvas.addEventListener('touchstart', onTouchStart, false);
+    canvas.addEventListener('mousedown', onMouseDown, false);
+		
+	//***********
+	/*
+		Make the menu bar float on the left side
+	  	ADD IN LISTENERS FOR THE SAVE STEPS
+	*/
+	//**************///
 	//$('input[name="court_type"]').change(function(){
 	//									 court = new Court();
 	//									 court.draw;
 	//});
-	//$("button#step").bind("tap", function(){
-	//					   saveStep();
-	//				});
-	//$("button#animate").bind("tap", function(){
-	//								 animate(1); //EVENTUALLY THIS WILL ANIMATE THE WHOLE THING...
-	//								 });	
-	//$("a.step").live('tap', function(){
-	//								 var step = $(this).attr("href");
-	//								 step = step.replace("#step-","");
-	//								 animate(step);
-	//					   });
+	$("a.step").live('click', function(){
+									 var step = $(this).attr("href");
+									 step = step.replace("#step-","");
+									 animate(step);
+						   });
 
         //event listener for application cache updates
       //  window.applicationCache.addEventListener('onupdateready', updateCache, false);
@@ -208,26 +217,7 @@ function endDraw(x,y) {
 	isDrag = false;
 }
 
-function loaded() {
-        //prevent default scrolling on document window
-        document.addEventListener('touchmove', function(e) {
-                e.preventDefault()
-        }, false);
-        canvas = document.querySelector('canvas');
-        //check if the browser supports canvas
-        if (canvas.getContext) {
-                init();
-        }
-        else {
-                alert('Your browser does not support Canvas 2D drawing, sorry!');
-        }
-}
-
 window.addEventListener("load", loaded, true);
-
-$(document).ready(function () {
-				  init();
-});
 
 function teamCount(kind){
 	return _.select(team, function(t){
@@ -236,7 +226,7 @@ function teamCount(kind){
 }
 
 function Court(){
-	var kind = $('input[name="court_type"]:checked').val();
+	var kind = "college";//$('input[name="court_type"]:checked').val();
 	var type = {
 		nba : {
 			length : 94,
@@ -270,8 +260,8 @@ function Court(){
 		}	
 	};
 	function append() {
-		$CANVAS.clearCanvas();
-		$CANVAS.drawRect({
+		$COURT_CANVAS.clearCanvas();
+		$COURT_CANVAS.drawRect({
 		  strokeStyle: "#000",
 		  strokeWidth: 3,
 		  x: 3,
@@ -282,7 +272,7 @@ function Court(){
 		  fromCenter: false
 		});
 		//console.log((type[kind].width / 2) * 10 - (type[kind].laneWidth / 2));
-		$CANVAS.drawLine({ //TOP FREE THROW
+		$COURT_CANVAS.drawLine({ //TOP FREE THROW
 							 strokeStyle: "#000",
 							 strokeWidth: 3,
 							 strokeCap: "round",
@@ -290,7 +280,7 @@ function Court(){
 							 x1: 3, y1: ((type[kind].width / 2) - (type[kind].laneWidth / 2)) * 10,
 							 x2: type[kind].laneHeightFromBaseline * 10, y2: ((type[kind].width / 2) - (type[kind].laneWidth / 2)) * 10
 		});
-		$CANVAS.drawLine({ //BOTTOM FREE THROW
+		$COURT_CANVAS.drawLine({ //BOTTOM FREE THROW
 						 strokeStyle: "#000",
 						 strokeWidth: 3,
 						 strokeCap: "round",
@@ -299,7 +289,7 @@ function Court(){
 						 x2: type[kind].laneHeightFromBaseline * 10, y2: ((type[kind].width / 2) + (type[kind].laneWidth / 2)) * 10,
 						 x3: type[kind].laneHeightFromBaseline * 10, y3: ((type[kind].width / 2) - (type[kind].laneWidth / 2)) * 10
 						 });
-		$CANVAS.drawArc({ //Free throw circle
+		$COURT_CANVAS.drawArc({ //Free throw circle
 							strokeStyle: "#000",
 							strokeWidth: 3,
 							x: type[kind].laneHeightFromBaseline * 10, 
@@ -308,7 +298,7 @@ function Court(){
 							fromCenter: true,
 							start: 0, end: 180 //180 is half
 						});
-		$CANVAS.drawArc({ //3 Point Line
+		$COURT_CANVAS.drawArc({ //3 Point Line
 						strokeStyle: "#000",
 						strokeWidth: 3,
 						x: (type[kind].hoop) * 10 + 3, 
@@ -317,7 +307,7 @@ function Court(){
 						fromCenter: true,
 						start: 0, end: 180
 						});
-		$CANVAS.drawLine({ //BACKBOARD
+		$COURT_CANVAS.drawLine({ //BACKBOARD
 						 strokeStyle: "#000",
 						 strokeWidth: 3,
 						 strokeCap: "round",
@@ -325,7 +315,7 @@ function Court(){
 						 x1: (type[kind].hoop) * 10 + 3, y1: (type[kind].width / 2) * 10 - 15,
 						 x2: (type[kind].hoop) * 10 + 3, y2: (type[kind].width / 2) * 10 + 15
 						 });
-		$CANVAS.drawArc({ //HOOP
+		$COURT_CANVAS.drawArc({ //HOOP
 						strokeStyle: "#000",
 						strokeWidth: 3,
 						x: (type[kind].hoop) * 10 + 3 + 10, 
@@ -339,9 +329,9 @@ function Court(){
 }
 
 function drawCourt(){
-	court_type = $('input[name="court_type"]:checked').val();
-	$canvas.clearCanvas();
-	$canvas.drawRect({
+	court_type = 'college'; //$('input[name="court_type"]:checked').val();
+	$COURT_CANVAS.clearCanvas();
+	$COURT_CANVAS.drawRect({
 					 strokeStyle: "#000",
 					 strokeWidth: 3,
 					 x: 3, y: 3,
@@ -504,6 +494,7 @@ function getStepData(step){
 }
 
 function animate(step){
+	if(!step){ step=1; }
 	_.each(team, function(player, player_num){
 		   var x = player.x;
 		   var y = player.y;
@@ -541,7 +532,7 @@ function animate(step){
 					clearInterval(player.moveHandle);
 				}
 		   }
-		   player.moveHandle = setInterval(move,20);
+		   player.moveHandle = setInterval(move,10);
 		   });
 }
 
@@ -552,8 +543,8 @@ function draw() {
 	if (canvasValid == false) {
 		$canvas.clearCanvas();
 		// Add stuff you want drawn in the background all the time here
-		c = new Court();
-		court.draw;
+		//c = new Court();
+		//court.draw;
 		// draw all boxes
 		var l = team.length;
 		for (var i = 0; i < l; i++) {
