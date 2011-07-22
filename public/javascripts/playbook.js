@@ -43,9 +43,8 @@ function init() {
 	$ghostcanvas = $canvas.clone();
 	$CANVAS = $canvas;
 	cssScale = [$canvas.width() / $canvas.attr('width'),
-					$canvas.height() / $canvas.attr('height')];
-	console.log(cssScale);
-	
+				$canvas.height() / $canvas.attr('height')];
+	//console.log(cssScale);
 	//this.setDims(x*cssScale[0], y*cssScale[1], w*cssScale[0], h*cssScale[1]);
 	
 	//this.x = (x - this.offset[0]) / cssScale[0] + w * .5;
@@ -56,21 +55,11 @@ function init() {
 	setInterval(draw, INTERVAL);
 
         //set height and width to size of device window
-        canvas.setAttribute("height", (window.innerHeight - toolbarHeight) + "px");
-        canvas.setAttribute("width", window.innerWidth + "px");
-
-        //pre load the colour picker image
-//      imgPicker = new Image();
-//      imgPicker.src = 'picker.png';
-        //set initial toolbar fill colour
+        //canvas.setAttribute("height", (window.innerHeight - toolbarHeight) + "px");
+        //canvas.setAttribute("width", window.innerWidth + "px");
 //      document.querySelector('#strokecolor').style.background = 'rgb(0,0,0)';
-//      document.querySelector('#fillcolor').style.background = 'rgb(255,255,255)';
         //add event listeners
 //      document.querySelector('#clear').addEventListener('click', clearCanvas, false);
-//      document.querySelector('#save').addEventListener('click', saveCanvas, false);
-//      document.querySelector('#undo').addEventListener('click', undoCanvas, false);
-//      document.querySelector('#strokecolor').addEventListener('click', strokePicker, false);
-//      document.querySelector('#fillcolor').addEventListener('click', fillPicker, false);
 
         //add touch and mouse event listeners
         canvas.addEventListener('touchstart', onTouchStart, false);
@@ -108,7 +97,7 @@ function onTouchStart(e) {
 
         if (e.touches.length == 1) {
 
-                startDraw(e.touches[0].pageX, e.touches[0].pageY);
+                startDraw(e.touches[0].pageX / cssScale[0] , e.touches[0].pageY / cssScale[1]);
                 //alert(e.touches[0].pageX);
                 canvas.addEventListener('touchmove', onTouchMove, false);
                 canvas.addEventListener('touchend', onTouchEnd, false);
@@ -138,7 +127,6 @@ function startDraw(x,y){
 			mySel.y = y - offsety;
 			console.log(mouseDown);
 			isDrag = true;
-			//$canvas.bind("touchmove mousemove", function(event){ myMove(event);});
 			clear($ghostcanvas);
 			invalidate();
 			return;
@@ -164,7 +152,7 @@ function startDraw(x,y){
 function onTouchMove(e) {
 
         e.preventDefault();
-        moveDraw(e.touches[0].pageX, e.touches[0].pageY, e.timeStamp);
+        moveDraw(e.touches[0].pageX / cssScale[0], e.touches[0].pageY / cssScale[1], e.timeStamp);
 }
 
 // Happens when the mouse is moving inside the canvas
@@ -201,13 +189,13 @@ function onTouchCancel(e) {
 }
 
 function onMouseDown(e) {
-        startDraw(e.clientX, e.clientY);
+        startDraw(e.clientX / cssScale[0], e.clientY / cssScale[1]);
         canvas.addEventListener('mousemove', onMouseMove, false);
         canvas.addEventListener('mouseup', onMouseUp, false);
 }
 
 function onMouseMove(e) {
-        moveDraw(e.clientX, e.clientY, e.timeStamp);
+        moveDraw(e.clientX / cssScale[0], e.clientY / cssScale[1], e.timeStamp);
 }
 
 function onMouseUp(e) {
