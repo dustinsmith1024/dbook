@@ -5,41 +5,237 @@ socket.on('disconnect', function(){
 socket.on('connection', function(){
 	console.log("Server Connection to Socket.io");
 });
-var canvas;
-var $canvas;
-var court;
-var $CANVAS;
-var cssScale;
-var $ghostcanvas; // we use a fake canvas to draw individual shapes for selection testing
-var INTERVAL = 20;  // how often, in milliseconds, we check to see if a redraw is needed
-var isDrag = false;
+var $canvas,
+	court,
+	$CANVAS,
+	cssScale,
+	$ghostcanvas, // we use a fake canvas to draw individual shapes for selection testing
+	INTERVAL = 20,  // how often, in milliseconds, we check to see if a redraw is needed
+	isDrag = false,
 // when set to true, the canvas will redraw everything
 // invalidate() just sets this to false right now
 // we want to call invalidate() whenever we make a change
-var canvasValid = false;
+	canvasValid = false,
 // The node (if any) being selected.
 // If in the future we want to select multiple objects, this will get turned into an array
-var mySel; 
+	mySel, 
 // The selection color and width. Right now we have a red selection with a small width
-var mySelColor = '#FF6600';
+	mySelColor = '#FF6600',
 // since we can drag from anywhere in a node
 // instead of just its x/y corner, we need to save
 // the offset of the mouse when we start dragging.
-var offsetx, offsety;
-var team = [];
-var steps = [];
-// Padding and border style widths for mouse offsets
-//var stylePaddingLeft, stylePaddingTop, styleBorderLeft, styleBorderTop;
-
+	offsetx, 
+	offsety,
+	team = [],
+	steps = [];
+	
 var mouseDown = 0;
-document.body.onmousedown = function(e) { 
-	++mouseDown;
-	console.log(e.pageX);
-	console.log(e.pageY);
+
+function init() {
+
+        ctx = canvas.getContext('2d');
+
+	$canvas = $('#court');
+	//set height and width to size of device window
+	var toolbarHeight = 10;
+	$canvas.height((window.innerHeight - toolbarHeight) + "px");
+	$canvas.width((window.innerWidth) + "px");
+	$ghostcanvas = $canvas.clone();
+	$CANVAS = $canvas;
+	cssScale = [$canvas.width() / $canvas.attr('width'),
+					$canvas.height() / $canvas.attr('height')];
+	console.log(cssScale);
+	
+	//this.setDims(x*cssScale[0], y*cssScale[1], w*cssScale[0], h*cssScale[1]);
+	
+	//this.x = (x - this.offset[0]) / cssScale[0] + w * .5;
+	//this.y = (y - this.offset[1]) / cssScale[1] + h * .5;	
+	//fixes a problem where double clicking causes text to get selected on the canvas
+	//$canvas.select(function () { return false; });
+	// make draw() fire every INTERVAL milliseconds.
+	setInterval(draw, INTERVAL);
+
+        //set height and width to size of device window
+        canvas.setAttribute("height", (window.innerHeight - toolbarHeight) + "px");
+        canvas.setAttribute("width", window.innerWidth + "px");
+
+        //pre load the colour picker image
+//      imgPicker = new Image();
+//      imgPicker.src = 'picker.png';
+        //set initial toolbar fill colour
+//      document.querySelector('#strokecolor').style.background = 'rgb(0,0,0)';
+//      document.querySelector('#fillcolor').style.background = 'rgb(255,255,255)';
+        //add event listeners
+//      document.querySelector('#clear').addEventListener('click', clearCanvas, false);
+//      document.querySelector('#save').addEventListener('click', saveCanvas, false);
+//      document.querySelector('#undo').addEventListener('click', undoCanvas, false);
+//      document.querySelector('#strokecolor').addEventListener('click', strokePicker, false);
+//      document.querySelector('#fillcolor').addEventListener('click', fillPicker, false);
+
+        //add touch and mouse event listeners
+        canvas.addEventListener('touchstart', onTouchStart, false);
+        canvas.addEventListener('mousedown', onMouseDown, false);
+	
+	//$('input[name="court_type"]').change(function(){
+	//									 court = new Court();
+	//									 court.draw;
+	//});
+	//$("button#step").bind("tap", function(){
+	//					   saveStep();
+	//				});
+	//$("button#animate").bind("tap", function(){
+	//								 animate(1); //EVENTUALLY THIS WILL ANIMATE THE WHOLE THING...
+	//								 });	
+	//$("a.step").live('tap', function(){
+	//								 var step = $(this).attr("href");
+	//								 step = step.replace("#step-","");
+	//								 animate(step);
+	//					   });
+
+        //event listener for application cache updates
+      //  window.applicationCache.addEventListener('onupdateready', updateCache, false);
+        	// add custom initialization here:
+	court = new Court();
+	console.log(court);
+	court.draw;
+
 }
-document.body.onmouseup = function() {
-	--mouseDown;
+
+function onTouchStart(e) {
+		//SHOULD DRAW A NEW SHAPE IF ONE IS NOT FOUND
+		//SHOULD ALSO SET Listeners
+		e.preventDefault();
+
+        if (e.touches.length == 1) {
+
+                startDraw(e.touches[0].pageX, e.touches[0].pageY);
+                //alert(e.touches[0].pageX);
+                canvas.addEventListener('touchmove', onTouchMove, false);
+                canvas.addEventListener('touchend', onTouchEnd, false);
+                canvas.addEventListener('touchcancel', onTouchCancel, false);
+        }
 }
+
+function startDraw(x,y){
+	clear($ghostcanvas);
+	// run through all the boxes
+	var l = team.length;
+	for (var i = l-1; i >= 0; i--) {
+		// draw shape onto ghost context		
+		team[i].write_to = 1; //SWITCHES TO GHOST
+		team[i].draw();
+		team[i].write_to = 0; //SWITCHES BACK TO MAIN CANVAS
+		// get image data at the mouse x,y pixel
+		var imageData = $ghostcanvas[0].getContext('2d').getImageData(x, y, 1, 1);
+		var index = (x + y * imageData.width) * 4;
+		// if the mouse pixel exists, select and break
+		if (imageData.data[3] > 0) {
+			mySel = team[i];
+			console.log(i);
+			offsetx = x - mySel.x;
+			offsety = y - mySel.y;
+			mySel.x = x - offsetx;
+			mySel.y = y - offsety;
+			console.log(mouseDown);
+			isDrag = true;
+			//$canvas.bind("touchmove mousemove", function(event){ myMove(event);});
+			clear($ghostcanvas);
+			invalidate();
+			return;
+		}
+	}
+	if($('input[name="player_type"]:checked').val()=="offense"){
+		if (teamCount("offense") < 5){
+			addX(x,y); //NEED TOGGLES FOR WHICH ON WE WANT TO DRAW
+		}//ELSE TELL THE USER THERE IS TOO MANY
+	}else{
+		if (teamCount("defense") < 5){
+			addO(x,y);
+		}//ELSE TELL THE USER THERE IS TOO MANY
+	}
+	// havent returned means we have selected nothing
+	mySel = null;
+	// clear the ghost canvas for next time
+	clear($ghostcanvas);
+	// invalidate because we might need the selection border to disappear
+	invalidate();
+}
+
+function onTouchMove(e) {
+
+        e.preventDefault();
+        moveDraw(e.touches[0].pageX, e.touches[0].pageY, e.timeStamp);
+}
+
+// Happens when the mouse is moving inside the canvas
+function moveDraw(x,y,t){
+	if (isDrag){	
+		//var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
+		//var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
+		mySel.x = x - offsetx;
+		mySel.y = y - offsety;   
+		// something is changing position so we better invalidate the canvas!
+		invalidate();
+	}
+}
+
+function onTouchEnd(e) {
+
+        e.preventDefault();
+
+        if (e.touches.length == 0) {
+
+                endDraw(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
+                canvas.removeEventListener('touchmove', onTouchMove, false);
+                canvas.removeEventListener('touchend', onTouchEnd, false);
+                canvas.removeEventListener('touchcancel', onTouchCancel, false);
+        }
+}
+
+function onTouchCancel(e) {
+
+        canvas.removeEventListener('touchmove', onTouchMove, false);
+        canvas.removeEventListener('touchend', onTouchEnd, false);
+        canvas.removeEventListener('touchcancel', onTouchCancel, false);
+
+}
+
+function onMouseDown(e) {
+        startDraw(e.clientX, e.clientY);
+        canvas.addEventListener('mousemove', onMouseMove, false);
+        canvas.addEventListener('mouseup', onMouseUp, false);
+}
+
+function onMouseMove(e) {
+        moveDraw(e.clientX, e.clientY, e.timeStamp);
+}
+
+function onMouseUp(e) {
+        endDraw(e.clientX, e.clientY);
+        canvas.removeEventListener('mousemove', onMouseMove, false);
+        canvas.removeEventListener('mouseup', onMouseUp, false);
+}
+
+function endDraw(x,y) {
+	isDrag = false;
+}
+
+function loaded() {
+        //prevent default scrolling on document window
+        document.addEventListener('touchmove', function(e) {
+                e.preventDefault()
+        }, false);
+        canvas = document.querySelector('canvas');
+        //check if the browser supports canvas
+        if (canvas.getContext) {
+                init();
+        }
+        else {
+                alert('Your browser does not support Canvas 2D drawing, sorry!');
+        }
+}
+
+window.addEventListener("load", loaded, true);
 
 $(document).ready(function () {
 				  init();
@@ -283,87 +479,6 @@ function invalidate() {
 	//Helps performance, only draws the canvas while its valid.
 	canvasValid = false;
 } 
-
-// initialize our canvas, add a ghost canvas, set draw loop
-// then add everything we want to intially exist on the canvas
-function init() {
-	$canvas = $('#court');
-	//set height and width to size of device window
-	var toolbarHeight = 10;
-	$canvas.height((window.innerHeight - toolbarHeight) + "px");
-	$canvas.width((window.innerWidth) + "px");
-	$ghostcanvas = $canvas.clone();
-	$CANVAS = $canvas;
-	cssScale = [$canvas.width() / $canvas.attr('width'),
-					$canvas.height() / $canvas.attr('height')];
-	console.log(cssScale);
-	
-	//this.setDims(x*cssScale[0], y*cssScale[1], w*cssScale[0], h*cssScale[1]);
-	
-	//this.x = (x - this.offset[0]) / cssScale[0] + w * .5;
-	//this.y = (y - this.offset[1]) / cssScale[1] + h * .5;	
-	//fixes a problem where double clicking causes text to get selected on the canvas
-	$canvas.select(function () { return false; });
-	// fixes mouse co-ordinate problems when there's a border or padding
-	// see getMouse for more detail
-	/*if (document.defaultView && document.defaultView.getComputedStyle) {
-		stylePaddingLeft = parseInt(document.defaultView.getComputedStyle(canvas, null)['paddingLeft'], 10)      || 0;
-		stylePaddingTop  = parseInt(document.defaultView.getComputedStyle(canvas, null)['paddingTop'], 10)       || 0;
-		styleBorderLeft  = parseInt(document.defaultView.getComputedStyle(canvas, null)['borderLeftWidth'], 10)  || 0;
-		styleBorderTop   = parseInt(document.defaultView.getComputedStyle(canvas, null)['borderTopWidth'], 10)   || 0;
-	}*/
-	// make draw() fire every INTERVAL milliseconds.
-	setInterval(draw, INTERVAL);
-	// add our events. Up and down are for dragging,
-	// double click is for making new boxes
-
-	//if (e.touches.length == 1) {
-    //startDraw(e.touches[0].pageX, e.touches[0].pageY);
-function onTouchStart(e){
-  $("body").append(event.touches[0].pageX);
-}
-	canvas.addEventListener('touchstart', onTouchStart, false); 
-   	canvas.addEventListener('touchmove', onTouchMove, false);
-	canvas.addEventListener('touchend', onTouchEnd, false);
-	canvas.addEventListener('touchcancel', onTouchCancel, false); 
-
-	$canvas.bind("touchstart",function(event){
-		event.preventDefault();
-		alert(event.touches[0].pageX);
-		myDown(event);
-	}).bind("mousedown",function(event){
-		event.preventDefault();
-		myDown(event);
-	}).bind("touchend mouseup", function(event){
-		event.preventDefault();
-		myUp(event);
-	}).bind("taphold", function(event){
-		event.preventDefault();
-		console.log("should be draggin");
-		//myDblClick(event);
-	});
-	$('input[name="court_type"]').change(function(){
-										 court = new Court();
-										 court.draw;
-	});
-	$("button#step").bind("tap", function(){
-						   saveStep();
-					//Would also save to the db
-					//save the image as a thumbnail and add it to the side.
-					});
-	$("button#animate").bind("tap", function(){
-									 animate(1); //EVENTUALLY THIS WILL ANIMATE THE WHOLE THING...
-									 });	
-	$("a.step").live('tap', function(){
-									 var step = $(this).attr("href");
-									 step = step.replace("#step-","");
-									 animate(step);
-						   });
-	// add custom initialization here:
-	court = new Court();
-	console.log(court);
-	court.draw;
-}
 
 function saveStep(){
 	var maxStep = 0;
