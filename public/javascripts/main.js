@@ -52,7 +52,7 @@ function init() {
     	
 	//add touch and mouse event listeners
 	canvas.addEventListener('touchstart', onTouchStart, false);
-	canvas.addEventListener('mousedown', onMouseDown, false);
+//	canvas.addEventListener('mousedown', onMouseDown, false);
 	
 	//event listener for application cache updates
 	window.applicationCache.addEventListener('onupdateready', updateCache, false);
