@@ -65,7 +65,7 @@ function onTouchStart(e) {
 	if (e.touches.length == 1) {
 		
 		startDraw(e.touches[0].pageX, e.touches[0].pageY);
-            	
+                alert(e.touches[0].pageX);           	
 		canvas.addEventListener('touchmove', onTouchMove, false);
 		canvas.addEventListener('touchend', onTouchEnd, false);
 		canvas.addEventListener('touchcancel', onTouchCancel, false);
