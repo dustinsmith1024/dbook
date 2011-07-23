@@ -8,39 +8,29 @@
     <link rel="StyleSheet" href="/stylesheets/court.css" type="text/css" media="screen" />
   </head>
 <body>
-  <div id="left-bar">
-    <h1 class="hidden">Playbook</h1>
-    <p id="player">
-      <label for="offense">Offense:</label>
-      <input id="offense" type="radio" value="offense" name="player_type" checked="checked" />
-      <label for="defense">Defense:</label>
-      <input id="defense" type="radio" value="defense" name="player_type" />
-    </p>
-    <p>
-      <button type="button" id="step">Save Step</button>
-      <button type="button" id="animate">Animate!</button>
-    </p>
+  <div id="body">
+    <div id="left-bar">
+      <h1 class="hidden">Playbook</h1>
+      <p id="player">
+        <label for="offense">Offense:</label>
+        <input id="offense" type="radio" value="offense" name="player_type" checked="checked" />
+        <label for="defense">Defense:</label>
+        <input id="defense" type="radio" value="defense" name="player_type" />
+      </p>
+      <p>
+        <button type="button" id="step">Save Step</button>
+        <button type="button" id="animate">Animate!</button>
+      </p>
 
-    <h3>Step List</h3>
-    <ol id="steps">
-    </ol>
+      <h3>Step List</h3>
+      <ol id="steps">
+      </ol>
+    </div>
+    <div id="right-bar">
+      <canvas id="court" height="506px" width="946">This text is displayed if your browser does not support HTML5 Canvas.</canvas>
+      <canvas id="players" height="506" width="946" >No CANVAS Support</canvas>
+    </div>
   </div>
-
-  <canvas id="court"
-    style="z-index: 1;
-    position:absolute;
-    left:0px;
-    top:60px;
-    " height="506px" width="946">
-    This text is displayed if your browser does not support HTML5 Canvas.
-  </canvas>
-  <canvas id="players"
-    style="z-index: 2;
-    position:absolute;
-    left:0px;
-    top:60px;"
-     height="506" width="946" >No CANVAS Support</canvas>
-
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" ></script>
   <script src="/javascripts/jcanvas.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.1.6/underscore-min.js"></script>

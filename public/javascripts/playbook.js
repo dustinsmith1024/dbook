@@ -29,7 +29,8 @@ var canvas,
 	offsetx, 
 	offsety,
 	team = [],
-	steps = [];
+	steps = [],
+	toolbarWidth = 0;
 	
 var mouseDown = 0;
 
@@ -55,12 +56,13 @@ function init() {
 	$canvas = $('#players');
 	$COURT_CANVAS = $('#court');
 	//set height and width to size of device window
-	var toolbarHeight = 10;
-	$canvas.height((window.innerHeight - toolbarHeight) + "px");
-	$canvas.width((window.innerWidth) + "px");
-	$COURT_CANVAS.height((window.innerHeight - toolbarHeight) + "px");
-	$COURT_CANVAS.width((window.innerWidth) + "px");
+	toolbarWidth = document.querySelector('div#left-bar').offsetWidth;
+	$canvas.height((window.innerHeight) + "px");
+	$canvas.width((window.innerWidth - toolbarWidth) + "px");
+	$COURT_CANVAS.height((window.innerHeight) + "px");
+	$COURT_CANVAS.width((window.innerWidth - toolbarWidth) + "px");
 	$ghostcanvas = $canvas.clone();
+	$ghostcanvas.attr("style","");
 	$ghostcanvas.attr("id","ghost");
 	$CANVAS = $canvas;
 	cssScale = [$canvas.width() / $canvas.attr('width'),
@@ -115,6 +117,7 @@ function onTouchStart(e) {
 }
 
 function startDraw(x,y){
+	x = x  - toolbarWidth;
 	clear($ghostcanvas);
 	// run through all the boxes
 	var l = team.length;
@@ -658,7 +661,7 @@ function myMove(e){
 		//getMouse(e);
 		console.log(e.pageX);
 		console.log(e.pageY);
-		var x = e.pageX / cssScale[0] - $CANVAS[0].offsetLeft;
+		var x = e.pageX - toolbarWidth / cssScale[0] - $CANVAS[0].offsetLeft;
 		var y = e.pageY / cssScale[1] - $CANVAS[0].offsetTop;
 		
 		mySel.x = x - offsetx;
