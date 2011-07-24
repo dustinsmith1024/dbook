@@ -19,6 +19,9 @@ html, body {
   width: 75px;
   height: 100%;
 }
+#left-bar a, #left-bar a:hover, #left-bar a:visited {
+  color: white;
+}
 #right-bar {
   background-color: #FFF;
   position: absolute;

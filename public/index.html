@@ -12,14 +12,15 @@
     <div id="left-bar">
       <h1 class="hidden">Playbook</h1>
       <p id="player">
-        <label for="offense">Offense:</label>
-        <input id="offense" type="radio" value="offense" name="player_type" checked="checked" />
-        <label for="defense">Defense:</label>
-        <input id="defense" type="radio" value="defense" name="player_type" />
+       Cordinates
+      </p>
+      <p id="actions" class="hidden">
+        <a href="#" id="pass">Pass</a>
+        <a href="#" id="screen">Screen</a>
+        <a href="#" id="cancel">Cancel</a>
       </p>
       <p>
         <button type="button" id="step">Save Step</button>
-        <button type="button" id="animate">Animate!</button>
       </p>
 
       <h3>Step List</h3>
@@ -27,8 +28,12 @@
       </ol>
     </div>
     <div id="right-bar">
-      <canvas id="court" height="506px" width="946">This text is displayed if your browser does not support HTML5 Canvas.</canvas>
-      <canvas id="players" height="506" width="946" >No CANVAS Support</canvas>
+    <canvas id="court"
+       height="506px" width="946">
+      This text is displayed if your browser does not support HTML5 Canvas.
+    </canvas>
+    <canvas id="players"
+       height="506" width="946" >No CANVAS Support</canvas>
     </div>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" ></script>
