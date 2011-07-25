@@ -16,16 +16,32 @@ html, body {
   left: 0;
   position: absolute;
   top: 0;
-  width: 75px;
+  width: 95px;
   height: 100%;
 }
 #left-bar a, #left-bar a:hover, #left-bar a:visited {
   color: white;
 }
+#save-list {
+  list-style-type: none;
+}
+#save-list li {
+  padding: 7px;
+}
+#save-list a {
+  background-color: white;
+  color: #333;
+  border: 1px solid #333;
+  padding: 5px;
+}
+#save-list a:hover {
+  color: #000;
+  border: 1px solid #CCC;
+}
 #right-bar {
   background-color: #FFF;
   position: absolute;
-  left: 75px;
+  left: 95px;
   width: 100%;
 }
 canvas#court {

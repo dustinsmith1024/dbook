@@ -107,7 +107,7 @@ function init() {
 	offsety = document.querySelector("div#right-bar").offsetTop;
 	// make draw() fire every INTERVAL milliseconds.
 	setInterval(draw, INTERVAL);
-	document.querySelector('button#step').addEventListener('click', saveStep, false);
+	document.querySelector('a#step').addEventListener('click', saveStep, false);
 	//document.querySelector('button#animate').addEventListener('animate',animate,false);
     //add touch and mouse event listeners
     canvas.addEventListener('touchstart', onTouchStart, false);
