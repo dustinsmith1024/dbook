@@ -1,3 +1,39 @@
+/*
+	Initialize
+		- draw the court
+		- draw 5 players (all offense)
+		- load up initializers
+			- click or tap
+				- if no players selected
+					- make a selection if clicked on a player
+					- do nothing if not clicked on
+				- if selection already made
+					- pull up actions menu if clicked
+			- click save step
+				-  wrap all recent moves in a step
+
+		- Set up baseline for players
+			- push player locations onto steps
+			- 
+		- 
+		
+		steps = [
+		 {	players starting locations for step,
+			any actions or movements of players in between,
+		 	players ending location for step
+		 },
+		 { player },
+		 { }
+		];
+		
+		TODO:
+			setup save action button -> possible to auto-save actions and have a clear button
+			somehow save actions with a status of "before", "after", or "same time" as other actions
+				allow for players to move at the same time and ball to move while players move, etc
+			when saving a step have the final position of a step be the starting point of next step
+			
+*/
+
 var socket = io.connect('http://localhost:3000/');
 socket.on('disconnect', function(){
 			console.log("Server Connection Dropped!");
@@ -101,7 +137,7 @@ function init() {
 	addX(300,240);
 	addX(190,425);
 	addX(80,315);
-	saveStep();
+	//saveStep();
 }
 
 function onTouchStart(e) {
@@ -143,7 +179,7 @@ function startDraw(x,y){
 				return;
 			}else{
 				mySel = team[i];
-				//isDrag = true;
+				isDrag = true;
 			}
 			clear($ghostcanvas);
 			invalidate();
@@ -381,6 +417,18 @@ function invalidate() {
 }
 
 function saveStep(){
+	var tmpStep = [];
+	_.each(team,function(player){
+				tmpStep.push({ x :Math.round(player.x), y:Math.round(player.y)});
+	});
+	steps.push(tmpStep);
+	var userStep = Number(CURRENT_STEP) + 1;
+	$("#steps").append('<li><a class="step" href="#step-' + CURRENT_STEP + '">' + userStep + '</a></li>');
+	$("#player").html("STEP: " + userStep);
+	++CURRENT_STEP;
+}
+
+function saveStepOLD(){
 	var maxStep = 0;
 	_.each(team,function(player){
 				player.steps.push({ x :Math.round(player.x), y:Math.round(player.y), actions:player.actions});
