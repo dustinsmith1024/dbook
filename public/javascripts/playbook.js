@@ -53,7 +53,7 @@ var canvas,
 // when set to true, the canvas will redraw everything
 // invalidate() just sets this to false right now
 // we want to call invalidate() whenever we make a change
-	canvasValid = false,
+	//canvasValid = false,
 // The node (if any) being selected.
 // If in the future we want to select multiple objects, this will get turned into an array
 	mySel, actionSel, 
@@ -66,6 +66,7 @@ var canvas,
 	offsety,
 	team = [],
 	steps = [],
+	menu = "inactive",
 	CURRENT_STEP = 0;
 	
 var mouseDown = 0;
@@ -89,25 +90,27 @@ function init() {
 
     ctx = canvas.getContext('2d');
 
-	$canvas = $('#players');
+	//$canvas = $('#players');
 	$COURT_CANVAS = $('#court');
+	$canvas = new fabric.Canvas('players');
 	//set height and width to size of device window
 	var toolbarWidth = document.querySelector('div#left-bar').offsetWidth;
-	$canvas.height((window.innerHeight) + "px");
-	$canvas.width((window.innerWidth - toolbarWidth) + "px");
-	$COURT_CANVAS.height((window.innerHeight) + "px");
-	$COURT_CANVAS.width((window.innerWidth - toolbarWidth) + "px");
-	$ghostcanvas = $canvas.clone();
-	$ghostcanvas.attr("style","");
-	$ghostcanvas.attr("id","ghost");
+	//$canvas.setHeight((window.innerHeight) + "px");
+	//$canvas.setWidth((window.innerWidth - toolbarWidth) + "px");
+	//$COURT_CANVAS.height((window.innerHeight) + "px");
+	//$COURT_CANVAS.width((window.innerWidth - toolbarWidth) + "px");
+	//$ghostcanvas = $canvas.clone();
+	//$ghostcanvas.attr("style","");
+	//$ghostcanvas.attr("id","ghost");
 	$CANVAS = $canvas;
-	cssScale = [$canvas.width() / $canvas.attr('width'),
-				$canvas.height() / $canvas.attr('height')];
+	cssScale = [$canvas.getWidth() / document.querySelector("#players").getAttribute('width'),
+				$canvas.getHeight() / document.querySelector("#players").getAttribute('height')];
 	offsetx = document.querySelector("div#right-bar").offsetLeft;
 	offsety = document.querySelector("div#right-bar").offsetTop;
 	// make draw() fire every INTERVAL milliseconds.
-	setInterval(draw, INTERVAL);
+	//setInterval(draw, INTERVAL);
 	document.querySelector('a#step').addEventListener('click', saveStep, false);
+	document.querySelector('a#save_action').addEventListener('click', saveAction, false);
 	//document.querySelector('button#animate').addEventListener('animate',animate,false);
     //add touch and mouse event listeners
     canvas.addEventListener('touchstart', onTouchStart, false);
@@ -138,6 +141,20 @@ function init() {
 	addX(190,425);
 	addX(80,315);
 	//saveStep();
+	setTimeout(function animate() {
+    	//$canvas.forEachObject(function(obj){ obj.animateWidthHeight() });
+    	$canvas.renderAll();
+    	setTimeout(animate, 10);
+  	}, 10);
+  	
+  	var options = { 
+      top: 200,
+      left: 300,
+      fill: 'green'
+    };
+    options.width = 50;
+    options.height = 50;
+    $canvas.add(new fabric["Rect"](options));
 }
 
 function onTouchStart(e) {
@@ -156,6 +173,7 @@ function onTouchStart(e) {
 
 function startDraw(x,y){
 
+	/*
 	clear($ghostcanvas);
 
 	// run through all the players and see if you clicked on one
@@ -175,12 +193,14 @@ function startDraw(x,y){
 				isDrag = true;
 			}else if(mySel){
 				$("#actions").show();
+				drawActionsMenu();
 				actionSel = i;
 				return;
 			}else{
 				mySel = team[i];
 				isDrag = true;
 			}
+			$("#status-bar").html(JSON.stringify(mySel).replace(/,/g,"<br/>"));
 			clear($ghostcanvas);
 			invalidate();
 			return;
@@ -195,6 +215,7 @@ function startDraw(x,y){
 	clear($ghostcanvas);
 	// invalidate because we might need the selection border to disappear
 	invalidate();
+	*/
 }
 
 function onTouchMove(e) {
@@ -262,7 +283,49 @@ function teamCount(kind){
 	}).length;
 }
 
-var X = function(){
+var X = fabric.util.createClass(fabric.Object, {
+  
+    initialize: function(options) {
+      this.callSuper('initialize', options);
+      this.animDirection = 'up';
+    
+      this.width = 60;
+      this.height = 60;
+    
+      this.w1 = this.h2 = 70;
+      this.h1 = this.w2 = 40;
+    },
+    
+    animateWidthHeight: function() {
+      /*var interval = 2;
+    
+      if (this.h2 >= 30 && this.h2 <= 100) {
+        var actualInterval = (this.animDirection === 'up' ? interval : -interval);
+        this.h2 += actualInterval;
+        this.w1 += actualInterval;
+      }
+    
+      if (this.h2 >= 100) {
+        this.animDirection = 'down';
+        this.h2 -= interval;
+        this.w1 -= interval;
+      }
+      if (this.h2 <= 30) {
+        this.animDirection = 'up';
+        this.h2 += interval;
+        this.w1 += interval;
+      }*/
+    },
+
+    _render: function(ctx) {
+      ctx.fillRect(-this.w1 / 2, -this.h1 / 2, this.w1, this.h1);
+      ctx.fillRect(-this.w2 / 2, -this.h2 / 2, this.w2, this.h2);
+    }
+});
+  
+  
+
+var X1 = function(){
 	this.x = 0;
 	this.y = 0;
 	this.animating = false;
@@ -337,6 +400,76 @@ var X = function(){
 			invalidate();
 		}
 	};
+	this.drawActionMenu = function(){
+		this.canvas().drawRect({ //DRAW OUTER MENU
+  			strokeStyle: "#000",
+  			strokeWidth: 3,
+  			fillStyle: "#333",
+  			x: this.x1() - 10, y: this.y1() - 10,
+  			width: 150,
+  			height: 150,
+  			cornerRadius: 10,
+  			fromCenter: true
+		});
+		this.canvas().drawRect({ //PASS BOX
+  			strokeStyle: "#000", 
+  			strokeWidth: 3,
+  			fillStyle: "#FF6600",
+  			x: this.x1() - 10, y: this.y1() - 50,
+  			width: 120,
+  			height: 60,
+  			cornerRadius: 10,
+  			fromCenter: true
+		});
+		this.canvas().drawText({ //PASS TEXT
+  			fillStyle: "#000",
+  			text: "Pass",
+  			align: "center",
+  			baseline: "middle",
+  			font: "normal 24pt Verdana",
+  			x: this.x1() - 10,
+  			y: this.y1() - 50
+		});
+		this.canvas().drawRect({ //SCREEN
+  			strokeStyle: "#000",
+  			strokeWidth: 3,
+  			fillStyle: "#CCC",
+  			x: this.x1() - 10, y: this.y1() + 20,
+  			width: 120,
+  			height: 60,
+  			cornerRadius: 10,
+  			fromCenter: true
+		});
+		this.canvas().drawText({
+  			fillStyle: "#000",
+  			text: "Screen",
+  			align: "center",
+  			baseline: "middle",
+  			font: "normal 24pt Verdana",
+  			x: this.x1() - 10,
+  			y: this.y1() + 20
+		});
+		this.canvas().drawRect({ //CANCEL
+  			strokeStyle: "#000",
+  			strokeWidth: 3,
+  			fillStyle: "#FF0000",
+  			x: this.x1() + 60, y: this.y1() - 80,
+  			width: 35,
+  			height: 35,
+  			cornerRadius: 20,
+  			fromCenter: true
+		});
+		this.canvas().drawText({
+  			fillStyle: "#000",
+  			text: "X",
+  			align: "center",
+  			baseline: "middle",
+  			font: "normal 24pt Verdana",
+  			x: this.x1() + 60,
+  			y: this.y1() - 80
+		});
+		
+	};
 	this.screen = function(player_num){
 		this.canvas().drawLine({
 			strokeStyle: "#333",//this.strokeStyle,
@@ -396,11 +529,13 @@ var O = function (){
 };
 
 function addX(x, y) {
-  var player = new X();
-  player.x = x;
-  player.y = y;
-  team.push(player);
-  player.draw();
+	var player = new X({ top: y, left: x });
+	//var player = new X();
+	//player.x = x;
+	//player.y = y;
+	$canvas.add(player);
+	team.push(player);
+	//player.draw();
 }
 
 function addO(x, y) {
@@ -411,9 +546,82 @@ function addO(x, y) {
 	player.draw();
 }
 
+function drawActionsMenu(){
+	menu = "active"
+	var middle_y = $CANVAS.height() / 2;
+	var middle_x = $CANVAS.width() / 2 / 2;
+		$CANVAS.drawRect({ //DRAW OUTER MENU
+  			strokeStyle: "#000",
+  			strokeWidth: 3,
+  			fillStyle: "#333",
+  			x: middle_x - 10, y: middle_y - 10,
+  			width: 150,
+  			height: 150,
+  			cornerRadius: 10,
+  			fromCenter: true
+		});
+		$CANVAS.drawRect({ //PASS BOX
+  			strokeStyle: "#000", 
+  			strokeWidth: 3,
+  			fillStyle: "#FF6600",
+  			x: middle_x - 10, y: middle_y - 50,
+  			width: 120,
+  			height: 60,
+  			cornerRadius: 10,
+  			fromCenter: true
+		});
+		$CANVAS.drawText({ //PASS TEXT
+  			fillStyle: "#000",
+  			text: "Pass",
+  			align: "center",
+  			baseline: "middle",
+  			font: "normal 24pt Verdana",
+  			x: middle_x - 10,
+  			y: middle_y - 50
+		});
+		$CANVAS.drawRect({ //SCREEN
+  			strokeStyle: "#000",
+  			strokeWidth: 3,
+  			fillStyle: "#CCC",
+  			x: middle_x - 10, y: middle_y + 20,
+  			width: 120,
+  			height: 60,
+  			cornerRadius: 10,
+  			fromCenter: true
+		});
+		$CANVAS.drawText({
+  			fillStyle: "#000",
+  			text: "Screen",
+  			align: "center",
+  			baseline: "middle",
+  			font: "normal 24pt Verdana",
+  			x: middle_x - 10,
+  			y: middle_y + 20
+		});
+		$CANVAS.drawRect({ //CANCEL
+  			strokeStyle: "#000",
+  			strokeWidth: 3,
+  			fillStyle: "#FF0000",
+  			x: middle_x + 60, y: middle_y - 80,
+  			width: 35,
+  			height: 35,
+  			cornerRadius: 20,
+  			fromCenter: true
+		});
+		$CANVAS.drawText({
+  			fillStyle: "#000",
+  			text: "X",
+  			align: "center",
+  			baseline: "middle",
+  			font: "normal 24pt Verdana",
+  			x: middle_x + 60,
+  			y: middle_y - 80
+		});
+}
+
 function invalidate() {
 	//Helps performance, only draws the canvas while its valid.
-	canvasValid = false;
+	//canvasValid = false;
 }
 
 function saveStep(){
@@ -426,6 +634,10 @@ function saveStep(){
 	$("#steps").append('<li><a class="step" href="#step-' + CURRENT_STEP + '">' + userStep + '</a></li>');
 	$("#player").html("STEP: " + userStep);
 	++CURRENT_STEP;
+}
+
+function saveAction(){
+  console.log("save this shit");
 }
 
 function saveStepOLD(){
@@ -488,7 +700,7 @@ function animate(step){
 						player.y = player.y + change_y;
 					}
 					draw();
-					canvasValid = false;
+					//canvasValid = false;
 				}else{
 					var userStep = Number(step) + 1;
 					$("#player").html("STEP: " + userStep);
@@ -503,8 +715,10 @@ function animate(step){
 // While draw is called as often as the INTERVAL variable demands,
 // It only ever does something if the canvas gets invalidated by our code
 function draw(actions) {
+/*
 	if (canvasValid == false) {
-		$canvas.clearCanvas();
+		//MIGHT NOT NEED THIS WITH FAB
+		$canvas.renderTop();
 		// draw all boxes
 		var l = team.length;
 		for (var i = 0; i < l; i++) {
@@ -518,13 +732,14 @@ function draw(actions) {
 				team[i].draw();
 			}else{
 				//console.log("draw actions");
-				team[i].draw();
-				team[i].drawActions();
+				//team[i].draw();
+				//team[i].drawActions();
 			}
 		}
 		canvasValid = true;
 	}
-}
+	*/
+ }
 
 function playersMoving(){
 	moving = false;
@@ -546,7 +761,8 @@ function copyCtx(){
 	$("body").append(img);	
 }
 function clear(c) { //NEED TO FIX HEIGHT AND WIDTH 
-	c[0].getContext('2d').clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+//	c[0].getContext('2d').clearRect(0, 0, window.innerWidth, window.innerHeight);
 }
 
 function Court(){
