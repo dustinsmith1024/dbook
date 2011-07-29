@@ -113,8 +113,8 @@ function init() {
 	document.querySelector('a#save_action').addEventListener('click', saveAction, false);
 	//document.querySelector('button#animate').addEventListener('animate',animate,false);
     //add touch and mouse event listeners
-    canvas.addEventListener('touchstart', onTouchStart, false);
-    canvas.addEventListener('mousedown', onMouseDown, false);
+    //canvas.addEventListener('touchstart', onTouchStart, false);
+    //canvas.addEventListener('mousedown', onMouseDown, false);
 
 	$("a.step").live('click', function(e){
 		e.preventDefault();
